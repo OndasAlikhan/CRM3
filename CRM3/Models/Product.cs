@@ -9,6 +9,8 @@ namespace CRM3.Models
     public class Product : IValidatableObject
     {
         public int ID { get; set; }
+        [Required]
+        [StringLength(100)]
         public string Name { get; set; }
 
         public ICollection<CustomerAccountProduct> CustomerAccountProducts { get; set; }
