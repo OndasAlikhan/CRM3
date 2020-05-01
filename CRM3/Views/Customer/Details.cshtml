@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Detail";
+}
+@{
+    var customer = ViewData["Customer"] as Customer;
+    var customerAccountList = ViewData["CustomerAccountList"] as IList<CustomerAccount>;
+    var filials = ViewData["Filials"] as IList<Filial>;
+}
+
+<div style="display: flex; justify-content: space-between">
+    <div>
+        <h2>@customer.FullName</h2>
+    </div>
+    <div style="padding: 30px 30px 0 0 "><a asp-controller="CustomerAccount" asp-action="Create" asp-route-custid=@customer.ID class="btn btn-info">New customer account</a></div>
+</div>
+
+<div>
+    <div>@customer.Phone</div>
+    <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            
+            <th>ID</th>
+            <th>Filial</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var i in customerAccountList)
+        {
+            <tr id="tableRow">
+                <th>@i.ID</th>
+                @foreach (var j in filials)
+                {
+                    if (j.ID == i.FilialId)
+                    {
+                        <th>@j.Name</th>
+                    }
+                }
+                <th class="btn btn-primary openBtn" onclick="handleOpen(this)" data-cid=@i.ID>See Products</th>
+                <th class="btn btn-danger" onclick="handleDelete(this)" data-customer-id=@customer.ID data-cid=@i.ID>Delete</th>
+
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<script >
+    function handleOpen (obj) {
+        console.log('opening customer account')
+        let cid = obj.getAttribute("data-cid");
+        window.location.href = "/CustomerAccount/Index?custaccid="+cid
+    }
+    function handleDelete (obj) {
+        console.log('deleting a customer account')
+        let custaccId = obj.getAttribute("data-cid");
+        let customerId = obj.getAttribute("data-customer-id");
+        
+        const xhr = new XMLHttpRequest()
+        let body = 'custacc='+encodeURIComponent(custaccId)+
+                    '&customerId='+encodeURIComponent(customerId)
+        xhr.open("POST", '/CustomerAccount/Delete', true)
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange= function () {
+                                        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                            console.log(xhr.responseText);
+                                            window.location.reload();
+                                        };
+                                    };
+        xhr.send(body);
+        
+    }
+</script>

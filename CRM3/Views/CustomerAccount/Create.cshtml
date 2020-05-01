@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+@model CRM3.Models.CustomerAccount
+@{
+    var filials = ViewData["Filials"] as IList<Filial>;
+    var currentCustomer = ViewData["CurrentCustomer"] as Customer;
+}
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+<div>
+      <h2>Create</h2>
+      
+      <h4>CustomerAccount</h4>
+      <hr />
+      <div class="row">
+          <div class="col-md-4">
+              <form asp-action="Create">
+                  <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                  <div class="form-group">
+                      <label class="control-label">Customer Name</label>
+                      <input type="text" class="form-control" disabled="disabled" value=@currentCustomer.FullName>
+                  </div>
+                  <div class="form-group">
+                      <label asp-for="Filial" class="control-label"></label>
+                      <select class="form-control" asp-for="Filial">
+                          @foreach (var i in filials)
+                          {
+                              <option value=@i.ID>@i.Name</option>
+                          }
+                      </select>
+                      <div style="visibility: hidden;">
+                          <label asp-for="CustomerId" class="control-label">Customer</label>
+                          <input asp-for="CustomerId" value="@currentCustomer.ID" class="form-control" />
+                      </div>
+                      <span asp-validation-for="Filial" class="text-danger"></span>
+                  </div>
+                  <div class="form-group">
+                      <input type="submit" value="Create" class="btn btn-default" />
+                  </div>
+              </form>
+          </div>
+      </div>
+</div>
+</body>
+</html>

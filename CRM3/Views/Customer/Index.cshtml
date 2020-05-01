@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    var customerList = ViewData["CustomerList"] as IList<Customer>;
+}
+
+
+<div style="display: flex; justify-content: space-between">
+    <h4>Customer List</h4>
+    <span style="display:flex;">
+        <div style="padding: 30px 30px 0px 0px "><a asp-controller="Customer" asp-action="Create" class="btn btn-info">New customer</a></div>
+        <div style="padding: 30px 30px 0px 0px "><a asp-controller="Customer" asp-action="Filial" class="btn btn-info">Filial list</a></div>
+    </span>
+
+</div>
+
+<div>
+    <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            @foreach (var i in typeof(Customer).GetProperties())
+            {
+                if (i.Name != "CustomerAccounts")
+                {
+                    <th>@i.Name</th>
+                }
+            }
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var i in customerList)
+        {
+            <tr id="tableRow">
+                <th>@i.ID</th>
+                <th>@i.FullName</th>
+                <th>@i.Phone</th>
+                <th class="btn btn-primary openBtn" asp-controller="Customer" asp-action="Index" asp-route-id=@i.ID onclick="handleRowClicked(this)" data-id=@i.ID>See Accounts</th>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<script>
+    function handleRowClicked (row) {
+        console.log(row.getAttribute("data-id"))
+        let custId = row.getAttribute("data-id")
+        window.location.href = "/Customer/Details/"+custId
+    }
+</script>

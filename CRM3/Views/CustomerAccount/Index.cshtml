@@ -1,0 +1,71 @@
+﻿
+@{
+    var products = ViewData["Products"] as IList<Product>;
+    var currentCustAcc = ViewData["CurrentCustomerAccount"] as CustomerAccount;
+    var customer = ViewData["Customer"] as Customer;
+    var filial = ViewData["CurrentFilial"] as Filial;
+}
+
+<div style="display: flex; justify-content: space-between">
+    <h2>@customer.FullName - @filial.Name</h2>
+
+    <div style="display: flex; justify-content: space-between">
+        @model Product
+        <form asp-action="CreateProduct" method="post" style="display: flex; align-items: center;">
+            <div class="form-group">
+                <div style="display: flex; margin-top: 12px;">
+                    <label asp-for="Name" class="control-label">New Product</label>
+                    <input asp-for="Name" class="form-control"/>
+                </div>
+                <input type="text" style="visibility: hidden" name="custacc" value=@currentCustAcc.ID />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default"/>
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var i in products)
+        {
+            <tr id="tableRow">
+                <th>@i.ID</th>
+                <th>@i.Name</th>
+                <th class="btn btn-danger" asp-controller="CustomerAccount" asp-action="DeleteProduct" onclick="handleRowClicked(this)" data-id=@i.ID>Delete</th>
+
+            </tr>
+        }
+        </tbody>
+    </table>
+    <div>
+        <a asp-controller="Customer" asp-action="Details" asp-route-id=@customer.ID>Back</a>
+    </div>
+</div>
+<script>
+    function handleRowClicked (row) {
+        console.log(row.getAttribute("data-id"))
+        let prodId = row.getAttribute("data-id")
+        
+        const xhr = new XMLHttpRequest()
+        let body = 'prodId='+encodeURIComponent(prodId)
+        xhr.open("POST", '/CustomerAccount/DeleteProduct', true)
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange= function () {
+                                        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                            console.log(xhr.responseText);
+                                            window.location.reload();
+                                        };
+                                    };
+        xhr.send(body);
+    }
+</script>
