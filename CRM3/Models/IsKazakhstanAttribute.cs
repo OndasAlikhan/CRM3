@@ -11,7 +11,7 @@ namespace CRM3.Models
         private List<string> KazFilials;
         public IsKazakhstanAttribute()
         {
-             KazFilials = new List<String>(){ "Almaty", "Astana", "Aktau", "Shymkent", "Semey", "Oskement", "Pavlodar", "Petropavlovks", "Atyrau", "Aktobe", "Oral", "Kostanay", "Kyzylorda", "Taraz", "Karaganda"};
+             KazFilials = new List<string>(){ "Almaty", "Astana", "Aktau", "Shymkent", "Semey", "Oskement", "Pavlodar", "Petropavlovks", "Atyrau", "Aktobe", "Oral", "Kostanay", "Kyzylorda", "Taraz", "Karaganda"};
         }
 
         public string GetErrorMessage() => "That filial is not existent in Kazakhstan";
