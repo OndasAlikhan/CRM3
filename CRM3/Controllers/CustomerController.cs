@@ -48,7 +48,12 @@ namespace CRM3.Controllers
         [HttpPost]
         public IActionResult CreateFilial(IFormCollection collection)
         {
-            _context.Filials.Add(new Filial {Name = collection["Name"]});
+            var NewFilial = new Filial { Name = collection["Name"] };
+            if (!TryValidateModel(NewFilial))
+            {
+                return View("~/Views/Shared/Error.cshtml");
+            }
+            _context.Filials.Add(NewFilial);
             _context.SaveChanges();
             return Redirect("/Customer/Filial");
         }
@@ -66,8 +71,13 @@ namespace CRM3.Controllers
         {
             try
             {
-                // TODO: Add insert logic here
-                _context.Customers.Add(new Customer {FullName = collection["FullName"], Phone = collection["Phone"]});
+
+                var customer = new Customer { FullName = collection["FullName"], Phone = collection["Phone"] };
+                if (!TryValidateModel(customer))
+                {
+                    return View("~/Views/Shared/Error.cshtml");
+                }
+                _context.Customers.Add(customer);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
@@ -91,7 +101,11 @@ namespace CRM3.Controllers
             try
             {
                 // TODO: Add update logic here
-
+                var customer = new Customer();
+                if (!TryValidateModel(customer))
+                {
+                    return View("~/Views/Shared/Error.cshtml");
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -114,13 +128,29 @@ namespace CRM3.Controllers
             try
             {
                 // TODO: Add delete logic here
-
+                var customer = new Customer();
+                if (!TryValidateModel(customer))
+                {
+                    return View("~/Views/Shared/Error.cshtml");
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
                 return View();
             }
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult VerifyName(string FullName)
+        {
+            var customerFound = _context.Customers.SingleOrDefault(c => c.FullName == FullName) as Customer;
+            if (customerFound == null)
+            {
+                return Json($"Name {FullName} is already in use.");
+            }
+
+            return Json(true);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

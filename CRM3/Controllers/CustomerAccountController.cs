@@ -46,12 +46,17 @@ namespace CRM3.Controllers
         [HttpPost]
         public IActionResult Create(IFormCollection collection)
         {
+
             int filialId;
             int.TryParse(collection["Filial"], out filialId);
             int customerId;
             int.TryParse(collection["CustomerId"], out customerId);
-
-            _context.CustomerAccounts.Add(new CustomerAccount {CustomerId = customerId, FilialId = filialId});
+            var customerAccount = new CustomerAccount { CustomerId = customerId, FilialId = filialId };
+            if (!TryValidateModel(customerAccount))
+            {
+                return View("~/Views/Shared/Error.cshtml");
+            }
+            _context.CustomerAccounts.Add(customerAccount);
             _context.SaveChanges();
             return Redirect("/Customer/Details?id="+customerId);
         }
@@ -61,7 +66,13 @@ namespace CRM3.Controllers
         {
             int cId;
             int.TryParse(collection["custacc"], out cId);
-            _context.CustomerAccounts.Remove(new CustomerAccount{ID=cId});
+
+            var cA = new CustomerAccount { ID = cId };
+            if (!TryValidateModel(cA))
+            {
+                return View("~/Views/Shared/Error.cshtml");
+            }
+            _context.CustomerAccounts.Remove(cA);
             _context.SaveChanges();
             return Redirect("/Customer/Details?id="+collection["customerId"]);
 
@@ -76,9 +87,12 @@ namespace CRM3.Controllers
 
             int caId;
             int.TryParse(collection["custacc"], out caId);
-            
-            _context.CustomerAccountProducts.Add(new CustomerAccountProduct
-                {ProductId = newProduct.ID, CustomerAccoountId = caId});
+            var cap = new CustomerAccountProduct{ ProductId = newProduct.ID, CustomerAccoountId = caId };
+            if (!TryValidateModel(cap))
+            {
+                return View("~/Views/Shared/Error.cshtml");
+            }
+            _context.CustomerAccountProducts.Add(cap);
             _context.SaveChanges();
             return Redirect("/CustomerAccount/Index?custaccid="+caId);
         }
@@ -88,7 +102,13 @@ namespace CRM3.Controllers
         {
             int prodId;
             int.TryParse(collection["prodId"], out prodId);
-            _context.Products.Remove(new Product {ID = prodId});
+
+            var p = new Product { ID = prodId };
+            if (!TryValidateModel(p))
+            {
+                return View("~/Views/Shared/Error.cshtml");
+            }
+            _context.Products.Remove(p);
             _context.SaveChanges();
             return Ok();
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,7 +13,10 @@ namespace CRM3.Models
 
         [Required]
         [MaxLength(100)]
+        [Remote(action: "VerifyName", controller: "Customer")]
         public string FullName { get; set; }
+        [Required]
+        [MaxLength(14)]
         public string Phone { get; set; }
 
         public ICollection<CustomerAccount> CustomerAccounts { get; set; }
