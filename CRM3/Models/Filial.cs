@@ -8,6 +8,8 @@ namespace CRM3.Models
     public class Filial
     {
         public int ID { get; set; }
+        [Required]
+        [StringLength(100)]
         public string Name { get; set; }
 
         public ICollection<User> Users { get; set; }
