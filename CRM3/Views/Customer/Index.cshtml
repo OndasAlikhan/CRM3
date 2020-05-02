@@ -37,7 +37,11 @@
                 <th>@i.ID</th>
                 <th>@i.FullName</th>
                 <th>@i.Phone</th>
-                <th class="btn btn-primary openBtn" asp-controller="Customer" asp-action="Index" asp-route-id=@i.ID onclick="handleRowClicked(this)" data-id=@i.ID>See Accounts</th>
+                <th>
+                    <button class="btn btn-primary openBtn" asp-controller="Customer" asp-action="Index" asp-route-id=@i.ID onclick="handleRowClicked(this)" data-id=@i.ID>See Accounts</button>
+                    <button class="btn btn-primary openBtn" asp-controller="Customer" asp-action="Edit" asp-route-id=@i.ID onclick="handleRowClickedEdit(this)" data-id=@i.ID>Edit</button>
+                    <button class="btn btn-danger openBtn" asp-route-id=@i.ID onclick="handleRowClickedDelete(this)" data-id=@i.ID>Delete</button>
+                </th>
             </tr>
         }
         </tbody>
@@ -48,5 +52,27 @@
         console.log(row.getAttribute("data-id"))
         let custId = row.getAttribute("data-id")
         window.location.href = "/Customer/Details/"+custId
+    }
+
+    function handleRowClickedEdit(row) {
+        let custId = row.getAttribute("data-id")
+        window.location.href = "/Customer/Edit/" + custId
+    }
+
+    function handleRowClickedDelete(row) {
+        console.log(row.getAttribute("data-id"))
+        let custId = row.getAttribute("data-id")
+
+        const xhr = new XMLHttpRequest()
+        let body = 'custId=' + encodeURIComponent(custId)
+        xhr.open("POST", '/Customer/Delete', true)
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                console.log(xhr.responseText);
+                window.location.reload();
+            };
+        };
+        xhr.send(body);
     }
 </script>

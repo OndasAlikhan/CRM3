@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using CRM3.Models;
 using System.Diagnostics;
 using CRM3.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM3.Controllers
 {
@@ -90,27 +91,33 @@ namespace CRM3.Controllers
         // GET: Customer/Edit/5
         public ActionResult Edit(int id)
         {
+            ViewData["EditCustomer"] = _context.Customers.SingleOrDefault(c => c.ID == id) as Customer;
             return View();
         }
 
         // POST: Customer/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult Edit(int id, IFormCollection collection)
         {
             try
             {
                 // TODO: Add update logic here
-                var customer = new Customer();
-                if (!TryValidateModel(customer))
+                int cId;
+                int.TryParse(collection["ID"], out cId);
+                var customerEdit = _context.Customers.FirstOrDefault<Customer>(c => c.ID == cId);
+                if (!TryValidateModel(customerEdit))
                 {
                     return View("~/Views/Shared/Error.cshtml");
                 }
-                return RedirectToAction(nameof(Index));
+                customerEdit.FullName = collection["FullName"];
+                customerEdit.Phone = collection["Phone"];
+                _context.SaveChanges();
+                
+                return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return RedirectToAction("Index");
             }
         }
 
@@ -120,32 +127,32 @@ namespace CRM3.Controllers
             return View();
         }
 
-        // POST: Customer/Delete/5
+        // POST: Customer/Delete
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(IFormCollection collection)
         {
-            try
+
+            // TODO: Add delete logic here
+            int deleteId;
+            int.TryParse(collection["custId"], out deleteId);
+
+            Customer customer = _context.Customers.SingleOrDefault(c => c.ID == deleteId) as Customer;
+            if (!TryValidateModel(customer))
             {
-                // TODO: Add delete logic here
-                var customer = new Customer();
-                if (!TryValidateModel(customer))
-                {
-                    return View("~/Views/Shared/Error.cshtml");
-                }
-                return RedirectToAction(nameof(Index));
+                return View("~/Views/Shared/Error.cshtml");
             }
-            catch
-            {
-                return View();
-            }
+            _context.Customers.Remove(customer);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
+            
+            
         }
 
         [AcceptVerbs("GET", "POST")]
         public IActionResult VerifyName(string FullName)
         {
             var customerFound = _context.Customers.SingleOrDefault(c => c.FullName == FullName) as Customer;
-            if (customerFound == null)
+            if (customerFound != null)
             {
                 return Json($"Name {FullName} is already in use.");
             }
