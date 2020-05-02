@@ -6,3 +6,7 @@
 - You can add Customer.
 - Customers can have only one account for one filial. (filial is Almaty, Astana or etc.)
 - Accounts contain products that customer have purchased.
+
+1. Customer one to many CustomerAccount
+2. Filial one to many CustomerAccount
+3. CustomerAccount many to many Product
