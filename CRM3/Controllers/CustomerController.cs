@@ -8,16 +8,23 @@ using CRM3.Models;
 using System.Diagnostics;
 using CRM3.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CRM3.Controllers
 {
     public class CustomerController : Controller
     {
         private readonly CRMContext _context;
-
-        public CustomerController(CRMContext context)
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<User> _signInManager;
+        public CustomerController(CRMContext context, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
         }
         // GET: Customer
         public ActionResult Index(int id)
@@ -27,6 +34,7 @@ namespace CRM3.Controllers
         }
 
         // GET: Customer/Details/5
+        [Authorize]
         public ActionResult Details(int id)
         {
             if (id == 0)
@@ -164,6 +172,81 @@ namespace CRM3.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string Email, string Password)
+        {
+            var user = await _userManager.FindByNameAsync(Email);
+            if (user != null)
+            {
+
+                //sign in logic
+                var signInResult = await _signInManager.PasswordSignInAsync(user, Password, false, false);
+                if (signInResult.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> MakeAdmin()
+        {
+            var admin = await _userManager.FindByNameAsync("Admin");
+            if (admin == null)
+            {
+                admin = new User
+                {
+                    UserName = "Admin",
+                    Password = "Admin"
+                };
+                await _userManager.CreateAsync(admin);
+                admin = await _userManager.FindByNameAsync("Admin");
+            }
+
+            await _userManager.AddToRoleAsync(admin, "Admin");
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult> Register(string Username, string Password)
+        {
+
+            var user = new User
+            {
+                UserName = Username
+            };
+            var result = await _userManager.CreateAsync(user, Password);
+            var currentUser = await _userManager.FindByNameAsync(user.UserName);
+            var roleresult = await _userManager.AddToRoleAsync(currentUser, "User");
+
+            if (result.Succeeded)
+            {
+                // sign up logics
+                var signInResult = await _signInManager.PasswordSignInAsync(user, Password, false, false);
+                if (signInResult.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> LogOut()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index");
         }
     }
 }

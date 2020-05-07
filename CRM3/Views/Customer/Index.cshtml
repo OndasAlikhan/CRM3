@@ -10,8 +10,12 @@
 <div style="display: flex; justify-content: space-between">
     <h4>Customer List</h4>
     <span style="display:flex;">
-        <div style="padding: 30px 30px 0px 0px "><a asp-controller="Customer" asp-action="Create" class="btn btn-info">New customer</a></div>
-        <div style="padding: 30px 30px 0px 0px "><a asp-controller="Customer" asp-action="Filial" class="btn btn-info">Filial list</a></div>
+        @if (User.IsInRole("Admin"))
+        {
+            <div style="padding: 30px 30px 0px 0px "><a asp-controller="Customer" asp-action="Create" class="btn btn-info">New customer</a></div>
+            <div style="padding: 30px 30px 0px 0px "><a asp-controller="Customer" asp-action="Filial" class="btn btn-info">Filial list</a></div>
+        }
+
     </span>
 
 </div>
