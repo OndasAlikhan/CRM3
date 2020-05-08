@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace CRM3.Models
 {
-    public class Role
+    public class Role : IdentityRole
     {
-        public int ID { get; set; }
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public override string Name { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; }
     }
