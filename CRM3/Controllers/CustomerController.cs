@@ -35,6 +35,7 @@ namespace CRM3.Controllers
 
         // GET: Customer/Details/5
         [Authorize]
+        [HttpGet]
         public ActionResult Details(int id)
         {
             if (id == 0)
@@ -48,12 +49,15 @@ namespace CRM3.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
         public IActionResult Filial()
         {
             ViewData["Filials"] = _context.Filials.ToList();
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult CreateFilial(IFormCollection collection)
         {
