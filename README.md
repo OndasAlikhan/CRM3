@@ -1,6 +1,6 @@
 # CRM3
-- This is a project for ASP.NET CORE course.
-- Done by **Ondas Alikhan** and **Aidos Rustem**.
+
+- Done by **Ondas Alikhan**.
 
 - It is a sample CRM system where you can control your customers and products that they purchase.
 - You can add Customer.
